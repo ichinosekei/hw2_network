@@ -1,10 +1,10 @@
 from fastapi import FastAPI, HTTPException
-
+from sqlalchemy import text
+from app.db import SessionLocal
 from app.core.errors import ValidationError, StorageUnavailable, NoteNotFound
 from app.core.models import Note
 from app.core.service import NotesService
 from app.main import storage
-from app.storage.memory import MemoryStorage
 
 from app.transport.grpc.server import create_grpc_server
 from starlette.middleware.wsgi import WSGIMiddleware
@@ -36,7 +36,13 @@ app.mount("/soap", WSGIMiddleware(soap_wsgi))
 
 @app.get("/health")
 def health():
-    return {"status": "OK"}
+    try:
+        with SessionLocal() as session:
+            session.execute(text("SELECT 1"))
+        return {"status": "OK"}
+    except Exception:
+        raise HTTPException(status_code=503, detail="database unavailable")
+
 
 @app.post("/notes")
 def create_note(description: str):
