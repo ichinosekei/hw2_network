@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package notes.v1;
+message Note {
+  string id = 1;
+  string description = 2;
+  int64 created_at_ms = 3;
+  int64 updated_at_ms = 4;
+}
+
+message CreateNoteRequest { string description = 1; }
+message GetNoteRequest { string id = 1; }
+message ListNotesRequest {}
+message ListNotesResponse { repeated Note notes = 1; }
+message UpdateDescriptionRequest { string id = 1; string description = 2; }
+message DeleteNoteRequest { string id = 1; }
+
+message Empty {}
+
+service NotesService {
+  rpc CreateNote(CreateNoteRequest) returns (Note);
+  rpc GetNote(GetNoteRequest) returns (Note);
+  rpc ListNotes(ListNotesRequest) returns (ListNotesResponse);
+  rpc UpdateDescription(UpdateDescriptionRequest) returns (Note);
+  rpc DeleteNote(DeleteNoteRequest) returns (Empty);
+}

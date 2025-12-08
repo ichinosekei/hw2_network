@@ -1,0 +1,7 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="notes.soap">
+  <soapenv:Body>
+    <tns:CreateNote>
+      <tns:description>hello soap</tns:description>
+    </tns:CreateNote>
+  </soapenv:Body>
+</soapenv:Envelope>

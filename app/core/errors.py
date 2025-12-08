@@ -4,6 +4,7 @@ class NoteNotFound(Exception):
 
 class ValidationError(Exception):
     pass
+
+
 class StorageUnavailable(Exception):
     pass
-

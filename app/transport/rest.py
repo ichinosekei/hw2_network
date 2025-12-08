@@ -6,9 +6,34 @@ from app.core.service import NotesService
 from app.main import storage
 from app.storage.memory import MemoryStorage
 
+from app.transport.grpc.server import create_grpc_server
+from starlette.middleware.wsgi import WSGIMiddleware
+from app.transport.soap_app import build_soap_wsgi_app
+
+
+
 app = FastAPI()
 
+grpc_server = None
+
+@app.on_event("startup")
+def _startup():
+    global grpc_server
+    grpc_server = create_grpc_server(service)
+    grpc_server.start()
+
+@app.on_event("shutdown")
+def _shutdown():
+    global grpc_server
+    if grpc_server is not None:
+        grpc_server.stop(grace=0.5)
+
+
+
 service = NotesService(repo=storage)
+soap_wsgi = build_soap_wsgi_app(service)
+app.mount("/soap", WSGIMiddleware(soap_wsgi))
+
 @app.get("/health")
 def health():
     return {"status": "OK"}
